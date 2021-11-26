@@ -1,4 +1,8 @@
 {
+  // All flag here: https://gist.github.com/ryanatkn/f1793abbe020e08b785cb56d4a712af1
+  "include": [
+    "src/**/*"
+  ],
   "compilerOptions": {
     "target": "es5",
     "lib": [
@@ -20,7 +24,4 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": [
-    "src"
-  ]
 }
