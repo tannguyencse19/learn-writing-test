@@ -1,125 +1,69 @@
 import { render, screen, fireEvent } from "@testing-library/react";
+import Todo from "../Todo";
+import { propsTypeOfTodo } from "../../../utils/Model";
+import { mockFunction } from "../../../utils/JestHelper";
 
-function getByRoleBtn(btnName: string): HTMLButtonElement {
-  return screen.getByRole("button", { name: btnName }) as HTMLButtonElement;
+// Gom lai de sau nay khoi suy nghi, moi test phai viet <Todo />
+function componentRender(props?: propsTypeOfTodo) {
+  return render(<Todo {...props} />);
 }
 
-function expectBtnInDocument(btn: HTMLElement) {
-  return expect(btn).toBeInTheDocument();
+function elementPicker(): HTMLElement[] {
+  componentRender();
+  const inputTask = screen.getByPlaceholderText(/e.g: Do laundry at 6pm/i);
+  const btnAdd = screen.getByRole("button", { name: /add/i });
+
+  return [inputTask, btnAdd];
 }
 
-describe("Integration test - first render", () => {
-  render(<Todo />);
+describe("----------Task Input Text---------", () => {
+  it("render_inputNone_outputDisplayNone", () => {
+    componentRender();
+    const inputTask = screen.getByPlaceholderText(/e.g: Do laundry at 6pm/i);
 
-  const AddBtn = getByRoleBtn("Add");
-  const RemoveBtn = getByRoleBtn("Remove");
-  const ModifyBtn = getByRoleBtn("Modify");
-
-  it("render input", () => {
-    expect(screen.getByRole("input")).toBeInTheDocument();
+    expect(inputTask).toBeInTheDocument();
   });
 
-  it("render CRUD button", () => {
-    expectBtnInDocument(AddBtn);
-    expect(RemoveBtn).not.toBeInTheDocument();
-    expectBtnInDocument(ModifyBtn);
-  });
+  it("typing_inputText_outputDisplayText", () => {
+    componentRender();
+    const inputTask = screen.getByPlaceholderText(/e.g: Do laundry at 6pm/i);
+    const inputText = "this is a sample text";
 
-  it("render TaskView component", () => {
-    expect(
-      screen.getAllByRole("listitem", { name: "Tasks" })
-    ).toBeInTheDocument(); // name Tasks ko on, can chi bao khac
-
-    expect(screen.getByText(/Number of task: 0/i)).toBeInTheDocument();
+    fireEvent.change(inputTask, { target: { value: inputText } });
+    expect(inputTask).toHaveValue(inputText);
   });
 });
 
-describe("Integration test - CRUD action", () => {
-  render(<Todo />);
+describe("----------Task Button Add------------", () => {
+  it("render_inputTaskNone_outputDisplayNone", () => {
+    componentRender();
+    const btnAdd = screen.getByRole("button", { name: /add/i });
 
-  const inputEl = screen.getByRole("input") as HTMLInputElement;
-  const addBtn = getByRoleBtn("Add");
-  const removeBtn = getByRoleBtn("Remove");
-  const modifyBtn = getByRoleBtn("Modify");
-  const taskView = screen.getAllByRole("listitem", { name: "Tasks" });
-  const taskCounter = screen.getByText(/Number of task/i);
-
-  describe("add button", () => {
-    let counter = 0;
-
-    function expectAfterAdd(): void {
-      expect(taskView).toHaveLength(counter);
-      expect(taskView).toContain(`Task #${counter}`);
-      expect(taskCounter).toHaveTextContent(`Number of task: ${counter}`);
-    }
-
-    it("add 5 task", () => {
-      function add(): void {
-        counter++;
-        fireEvent.change(inputEl, { target: { value: `Task #${counter}` } });
-        fireEvent.click(addBtn);
-
-        expectAfterAdd();
-      }
-
-      add();
-      add();
-      add();
-      add();
-      add();
-    });
-
-    it("add empty task => taskCounter should not increase", () => {
-      fireEvent.click(addBtn);
-
-      expectAfterAdd();
-    });
+    expect(btnAdd).toBeInTheDocument();
   });
 
-  describe("remove button", () => {
-    let counter = 0;
+  // it("pressing_inputTaskNone_outputDisplayNone", () => {
+  //   const mockHandleClick = jest.fn();
+  //   componentRender({ handleClick: mockHandleClick });
+  //   const btnAdd = screen.getByRole("button", { name: /add/i });
 
-    function add(): void {
-      counter++;
-      fireEvent.change(inputEl, { target: { value: `Task #${counter}` } });
-      fireEvent.click(addBtn);
+  //   fireEvent.click(btnAdd);
+  //   expect(mockHandleClick).toHaveBeenCalledTimes(1);
+  //   expect(screen.queryByText(/Task counter: 1/i)).not.toBeInTheDocument();
+  // });
 
-      expectAfterAdd();
-    }
+  it("pressing_inputTaskTrue_outputDisplayTaskJustAdded", () => {
+    componentRender();
+    const btnAdd = screen.getByRole("button", { name: /add/i });
+    const inputTask = screen.getByPlaceholderText(/e.g: Do laundry at 6pm/i);
+    const inputText = "First task";
 
-    function expectAfterAdd(): void {
-      expect(taskView).toHaveLength(counter);
-      expect(taskView).toContain(`Task #${counter}`);
-      expect(taskCounter).toHaveTextContent(`Number of task: ${counter}`);
-    }
+    fireEvent.change(inputTask, { target: { value: inputText } });
+    expect(inputTask).toHaveValue(inputText);
 
-    function remove(taskId: number): void {
-      const removeBtn = screen.getByTestId(`task-${taskId}-remove-btn`);
-      fireEvent.click(removeBtn);
-      counter--;
-
-      expectAfterRemove(taskId);
-    }
-
-    function expectAfterRemove(taskId: number): void {
-      expect(taskView).toHaveLength(counter);
-      expect(taskView).not.toContain(`Task #${taskId}`);
-      expect(taskCounter).toHaveTextContent(`Number of task: ${counter}`);
-    }
-
-    it("remove task just create", () => {
-      add(); // Task 1
-      remove(1);
-    });
-
-    it("add 5 task, then remove 4 task", () => {
-      [1, 2, 3, 4, 5].forEach(() => add());
-      [1, 3, 4, 5].forEach((taskId) => remove(taskId));
-    });
-  });
-
-  it("other CRUD with empty task => taskCounter should not increase", () => {
-    fireEvent.click(removeBtn);
-    fireEvent.click(modifyBtn);
+    fireEvent.click(btnAdd);
+    expect(screen.queryByText(inputText)).toBeInTheDocument();
+    expect(screen.queryByText(/Task counter: 1/i)).toBeInTheDocument();
+    expect(inputTask).toHaveValue("");
   });
 });

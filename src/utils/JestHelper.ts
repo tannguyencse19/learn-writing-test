@@ -11,3 +11,9 @@ export function testByTextIsAppear(regex: RegExp, appear: Boolean): void {
     expect(screen.queryByText(regex)).not.toBeNull();
   }
 }
+
+export function mockFunction<T extends (...args: any[]) => any>(
+  fn: T | undefined
+): jest.MockedFunction<T> {
+  return fn as jest.MockedFunction<T>;
+}

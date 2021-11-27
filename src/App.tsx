@@ -3,6 +3,7 @@ import "./App.css";
 import React from "react";
 import Child from "./components/Child/Child";
 import { sleepAwait } from "./utils/Helper";
+import Todo from "./components/Todo/Todo";
 
 function App() {
   const [SumLogic, setSumLogic] = React.useState<number>(0);
@@ -40,6 +41,7 @@ function App() {
         <button onClick={increment}>+</button>
         <button onClick={decrement}>-</button>
       </header>
+      <Todo  />
     </div>
   );
 }
