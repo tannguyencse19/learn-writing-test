@@ -1,14 +1,21 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import Todo from "../Todo";
 import { propsTypeOfTodo } from "../../../utils/Model";
-import { mockFunction } from "../../../utils/JestHelper";
+import { expectTextIsInDoc, mockFunction } from "../../../utils/JestHelper";
 
-// Gom lai de sau nay khoi suy nghi, moi test phai viet <Todo />
+/*
+ * Helper function
+ */
+
 function componentRender(props?: propsTypeOfTodo) {
+  // Gom lai de sau nay khoi suy nghi, moi test phai viet <Todo />
+
   return render(<Todo {...props} />);
 }
 
-function elementPicker(): HTMLElement[] {
+function renderThenPickElement(): HTMLElement[] {
+  // Chi goi 1 lan thoi
+
   componentRender();
   const inputTask = screen.getByPlaceholderText(/e.g: Do laundry at 6pm/i);
   const btnAdd = screen.getByRole("button", { name: /add/i });
@@ -16,54 +23,54 @@ function elementPicker(): HTMLElement[] {
   return [inputTask, btnAdd];
 }
 
+/*
+ * Testing start here
+ */
+
 describe("----------Task Input Text---------", () => {
-  it("render_inputNone_outputDisplayNone", () => {
-    componentRender();
-    const inputTask = screen.getByPlaceholderText(/e.g: Do laundry at 6pm/i);
+  it("render_inputTaskNone_outputDisplayNone", () => {
+    const [inputTask] = renderThenPickElement();
 
     expect(inputTask).toBeInTheDocument();
   });
 
-  it("typing_inputText_outputDisplayText", () => {
-    componentRender();
-    const inputTask = screen.getByPlaceholderText(/e.g: Do laundry at 6pm/i);
-    const inputText = "this is a sample text";
+  it("typing_inputTaskString_outputDisplayString", () => {
+    // Gia su la chap nhan moi loai character
+    const [inputTask] = renderThenPickElement();
+    const taskSample = "this is a sample task";
 
-    fireEvent.change(inputTask, { target: { value: inputText } });
-    expect(inputTask).toHaveValue(inputText);
+    fireEvent.change(inputTask, { target: { value: taskSample } });
+    expect(inputTask).toHaveValue(taskSample);
   });
 });
 
 describe("----------Task Button Add------------", () => {
   it("render_inputTaskNone_outputDisplayNone", () => {
-    componentRender();
-    const btnAdd = screen.getByRole("button", { name: /add/i });
+    const [btnAdd] = renderThenPickElement();
 
     expect(btnAdd).toBeInTheDocument();
   });
 
-  // it("pressing_inputTaskNone_outputDisplayNone", () => {
-  //   const mockHandleClick = jest.fn();
-  //   componentRender({ handleClick: mockHandleClick });
-  //   const btnAdd = screen.getByRole("button", { name: /add/i });
+  // it("pressing_inputTaskNone_outputDisplayNone_expectHandlerToBeCallOneTime", () => {
+  //   const mockHandleAddTask = mockFunction(() => {})
+  //   componentRender({handleAddTask: mockHandleAddTask});
+  //   const [btnAdd] = renderThenPickElement();
 
   //   fireEvent.click(btnAdd);
-  //   expect(mockHandleClick).toHaveBeenCalledTimes(1);
-  //   expect(screen.queryByText(/Task counter: 1/i)).not.toBeInTheDocument();
+  //   expect(mockHandleAddTask).toHaveBeenCalledTimes(1);
+  //   expectTextIsInDoc(/Task counter: 1/i, false);
   // });
 
   it("pressing_inputTaskTrue_outputDisplayTaskJustAdded", () => {
-    componentRender();
-    const btnAdd = screen.getByRole("button", { name: /add/i });
-    const inputTask = screen.getByPlaceholderText(/e.g: Do laundry at 6pm/i);
-    const inputText = "First task";
+    const [inputTask, btnAdd] = renderThenPickElement();
+    const taskSample = "First task";
 
-    fireEvent.change(inputTask, { target: { value: inputText } });
-    expect(inputTask).toHaveValue(inputText);
+    fireEvent.change(inputTask, { target: { value: taskSample } });
+    expect(inputTask).toHaveValue(taskSample);
 
     fireEvent.click(btnAdd);
-    expect(screen.queryByText(inputText)).toBeInTheDocument();
-    expect(screen.queryByText(/Task counter: 1/i)).toBeInTheDocument();
+    expectTextIsInDoc(taskSample);
+    expectTextIsInDoc(/Task counter: 1/i);
     expect(inputTask).toHaveValue("");
   });
 });

@@ -1,7 +1,7 @@
 import React from "react";
 import { clickHandlerType, propsTypeOfTodo } from "../../utils/Model";
 
-const Todo = (props: propsTypeOfTodo ) => {
+const Todo = (props: propsTypeOfTodo) => {
   const { handleAddTask } = props;
 
   const [TaskInput, setTaskInput] = React.useState<string>("");
@@ -18,9 +18,7 @@ const Todo = (props: propsTypeOfTodo ) => {
     if (TaskInput.length > 0) {
       setTaskList((prevState) => [...prevState, TaskInput]);
       setTaskCounter(TaskCounter + 1);
-      console.log(taskInputRef.current.value);
       taskInputRef.current.value = "";
-      console.log(taskInputRef.current.value);
     }
   }
 
@@ -39,8 +37,8 @@ const Todo = (props: propsTypeOfTodo ) => {
       </button>
       <ul>
         To-do List
-        {TaskList.map((taskName) => (
-          <li>{taskName}</li>
+        {TaskList.map((taskName, idx) => (
+          <li key={`task-${idx}`}>{taskName}</li>
         ))}
       </ul>
       <p>Task counter: {TaskCounter}</p>

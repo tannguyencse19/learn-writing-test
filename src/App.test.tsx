@@ -1,14 +1,14 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import App from "./App";
-import { testByTextInDoc, testByTextIsAppear } from "./utils/JestHelper";
+import { expectTextIsInDoc } from "./utils/JestHelper";
 
 describe("first render", () => {
   it("render sum text", () => {
     render(<App />);
-    testByTextInDoc(/Sum: 0/i);
-    testByTextIsAppear(/SumLogic updated/i, false);
-    testByTextIsAppear(/There is nothing to update/i, true);
+    expectTextIsInDoc(/Sum: 0/i);
+    expectTextIsInDoc(/SumLogic updated/i, false);
+    expectTextIsInDoc(/There is nothing to update/i);
   });
 });
 
@@ -19,8 +19,8 @@ describe("integration test", () => {
     const decrementBtn = screen.getByRole("button", { name: /-/i });
     fireEvent.click(incrementBtn);
     fireEvent.click(incrementBtn);
-    testByTextInDoc(/Sum: 2/i);
+    expectTextIsInDoc(/Sum: 2/i);
     fireEvent.click(decrementBtn);
-    testByTextInDoc(/Sum: 1/i);
+    expectTextIsInDoc(/Sum: 1/i);
   });
 });
