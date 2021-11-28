@@ -1,9 +1,9 @@
 import { screen, Matcher, within } from "@testing-library/react";
 
-export function expectTextIsInDoc(text: Matcher, isVisible: Boolean = true) {
-  return !isVisible
-    ? expect(screen.queryByText(text)).not.toBeInTheDocument()
-    : expect(screen.queryByText(text)).toBeInTheDocument();
+export function expectTextNullOrNot(text: Matcher, isNot: Boolean = true) {
+  return !isNot
+    ? expect(screen.queryByText(text)).toBeNull()
+    : expect(screen.queryByText(text)).not.toBeNull();
 }
 
 export function expectInputTagHaveValue(
@@ -22,8 +22,8 @@ export function expectElementContainText(
   isVisible: boolean = true
 ) {
   return !isVisible
-    ? expect(el).not.toHaveTextContent(text)
-    : expect(el).toHaveTextContent(text);
+    ? expect(el).not.toHaveTextContent(text as RegExp)
+    : expect(el).toHaveTextContent(text as RegExp);
 }
 
 export function expectListTagHaveLength(
