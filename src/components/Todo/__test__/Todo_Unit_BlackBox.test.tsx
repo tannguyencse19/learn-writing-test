@@ -1,49 +1,12 @@
 /* eslint-disable array-callback-return */
-import { render, screen, fireEvent } from "@testing-library/react";
-import Todo from "../Todo";
-import { propsTypeOfTodo } from "../../../utils/Model";
+import { screen, fireEvent } from "@testing-library/react";
 import {
   expectElementContainText,
   expectInputTagHaveValue,
   expectListTagHaveLength,
   expectTextNullOrNot,
 } from "../../../utils/JestHelper";
-import { loop } from "../../../utils/Helper";
-
-/*
- * Helper function
- */
-
-function componentRender(props?: propsTypeOfTodo) {
-  // Gom lai de sau nay khoi suy nghi, moi test phai viet <Todo />
-
-  return render(<Todo {...props} />);
-}
-
-function renderThenPickElement(): HTMLElement[] {
-  // Chi goi 1 lan thoi
-
-  componentRender();
-  const inputTask = screen.getByPlaceholderText(/e.g: Do laundry at 6pm/i);
-  const listTask = screen.getByTestId("task-list");
-  const btnAdd = screen.getByRole("button", { name: /add/i });
-  const taskCounter = screen.getByText(/Task counter/i);
-
-  return [inputTask, listTask, btnAdd, taskCounter];
-}
-
-function addTask(
-  inputTask: HTMLElement,
-  btnAdd: HTMLElement,
-  taskContent: string
-) {
-  fireEvent.change(inputTask, { target: { value: taskContent } });
-  fireEvent.click(btnAdd);
-}
-
-/*
- * Testing start here
- */
+import { addTask, renderThenPickElement } from "./TodoHelper";
 
 describe("----------Task Input Text---------", () => {
   it("render_inputTaskEmpty_outputDisplayEmpty", () => {
@@ -224,52 +187,6 @@ describe("---------Task Button Delete--------", () => {
 
       btnDelete = screen.queryAllByRole("button", { name: /delete/i });
       expect(btnDelete).toHaveLength(0);
-    });
-  });
-});
-
-describe("---------Integation Test----------", () => {
-  describe("Add then Delete 5 tasks", () => {
-    const noOfTasks = 5;
-
-    it("addThenDeleteImmediately_inputTaskTrue_outputDisplayNone", () => {
-      const [inputTask, listTask, btnAdd, taskCounter] =
-        renderThenPickElement();
-
-      function addThenDelete(idx?: number) {
-        const taskContent = `Task #${idx}`;
-        addTask(inputTask, btnAdd, taskContent);
-        const btnDelete = screen.getByRole("button", { name: /delete/i });
-        fireEvent.click(btnDelete);
-      }
-      loop(noOfTasks, addThenDelete);
-
-      expectElementContainText(taskCounter, /Task counter: 0/i);
-      expectListTagHaveLength(listTask, 0);
-    });
-
-    it("finishAddThenDelete_inputTaskTrue_outputDisplayNone", () => {
-      const [inputTask, listTask, btnAdd, taskCounter] =
-        renderThenPickElement();
-
-      function add(idx?: number) {
-        const taskContent = `Task #${idx}`;
-        addTask(inputTask, btnAdd, taskContent);
-      }
-      loop(noOfTasks, add);
-      expectElementContainText(taskCounter, `Task counter: ${noOfTasks}`);
-      expectListTagHaveLength(listTask, noOfTasks);
-
-      function deleteTask() {
-        const btnDelete = screen.queryAllByRole("button", { name: /delete/i });
-        if (btnDelete[0] !== null) {
-          fireEvent.click(btnDelete[0]);
-        }
-      }
-      loop(noOfTasks, deleteTask);
-
-      expectElementContainText(taskCounter, "Task counter: 0");
-      expectListTagHaveLength(listTask, 0);
     });
   });
 });
