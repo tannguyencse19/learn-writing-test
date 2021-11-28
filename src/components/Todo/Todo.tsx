@@ -16,11 +16,21 @@ const Todo = (props: propsTypeOfTodo) => {
 
   function handleAddTaskLocal() {
     if (TaskInput.length > 0) {
-      setTaskList((prevState) => [...prevState, TaskInput]);
-      setTaskCounter(TaskCounter + 1);
-      taskInputRef.current.value = "";
+      if (!TaskList.some((el) => el === TaskInput)) {
+        setTaskList((prevState) => [...prevState, TaskInput]);
+        setTaskCounter((prevState) => prevState + 1);
+        setTaskInput("");
+        taskInputRef.current.value = "";
+      }
     }
   }
+
+  const handleDeleteTaskLocal = React.useCallback((currentTask: string) => {
+    setTaskList((prevState) =>
+      prevState.filter((task) => task !== currentTask)
+    );
+    setTaskCounter((prevState) => prevState - 1);
+  }, []);
 
   return (
     <>
@@ -35,15 +45,55 @@ const Todo = (props: propsTypeOfTodo) => {
       <button name="task-btn-add" onClick={handleAddTaskLocal}>
         Add
       </button>
-      <ul>
-        To-do List
-        {TaskList.map((taskName, idx) => (
-          <li key={`task-${idx}`}>{taskName}</li>
-        ))}
-      </ul>
+
+      <List TaskList={TaskList} handleDeleteTask={handleDeleteTaskLocal} />
       <p>Task counter: {TaskCounter}</p>
     </>
   );
 };
+
+interface propsTypeOfList {
+  TaskList: Array<string>;
+  handleDeleteTask: (taskName: string) => void;
+}
+
+const List = React.memo((props: propsTypeOfList) => {
+  const { TaskList, handleDeleteTask } = props;
+
+  return (
+    <ul data-testid="task-list">
+      To-do List
+      {TaskList.map((taskName, idx) => (
+        <ListItem
+          key={`task-${idx}`}
+          taskName={taskName}
+          handleDeleteTask={handleDeleteTask}
+        />
+      ))}
+    </ul>
+  );
+});
+
+interface propsTypeOfListItem {
+  taskName: string;
+  handleDeleteTask: (taskName: string) => void;
+}
+
+const ListItem = React.memo((props: propsTypeOfListItem) => {
+  const { taskName, handleDeleteTask } = props;
+
+  return (
+    <li>
+      <span>{taskName}</span>
+      <button
+        name="task-btn-delete"
+        style={{ marginLeft: "10px" }}
+        onClick={() => handleDeleteTask(taskName)}
+      >
+        Delete
+      </button>
+    </li>
+  );
+});
 
 export default Todo;

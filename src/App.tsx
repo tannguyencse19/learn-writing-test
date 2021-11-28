@@ -35,12 +35,12 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+      {/* <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <Child sum={SumLogic} sideEffectMsg={SideEffectMsg} />
         <button onClick={increment}>+</button>
         <button onClick={decrement}>-</button>
-      </header>
+      </header> */}
       <Todo  />
     </div>
   );
