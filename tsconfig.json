@@ -1,5 +1,4 @@
 {
-  // All flag here: https://gist.github.com/ryanatkn/f1793abbe020e08b785cb56d4a712af1
   "include": [
     "src/**/*"
   ],
@@ -20,8 +19,8 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-  },
+    "isolatedModules": true
+  }
 }

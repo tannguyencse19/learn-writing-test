@@ -3,12 +3,17 @@ import { screen, fireEvent } from "@testing-library/react";
 import {
   expectElementContainText,
   expectInputTagHaveValue,
+  expectListTagContainChild,
   expectListTagHaveLength,
   expectTextNullOrNot,
+  fireEventChangeInputTag,
+  fireEventClickOutside,
 } from "../../../utils/JestHelper";
 import { addTask, renderThenPickElement } from "./TodoHelper";
+import TestRenderer from "react-test-renderer";
+import Todo from "../Todo";
 
-describe("----------Task Input Text---------", () => {
+describe("----------Task Input Add---------", () => {
   it("render_inputTaskEmpty_outputDisplayEmpty", () => {
     const inputTask = renderThenPickElement()[0];
 
@@ -151,7 +156,7 @@ describe("---------Task Button Delete--------", () => {
 
       const btnDelete = screen.getByRole("button", { name: /delete/i });
       fireEvent.click(btnDelete);
-      expectTextNullOrNot(taskContent, false);
+      expectTextNullOrNot(taskContent, true);
       expectElementContainText(taskCounter, /Task counter: 0/i);
       expectListTagHaveLength(listTask, 0);
     });
@@ -167,26 +172,105 @@ describe("---------Task Button Delete--------", () => {
       let btnDelete = screen.getAllByRole("button", { name: /delete/i });
       expect(btnDelete).toHaveLength(3);
       fireEvent.click(btnDelete[1]);
-      expectTextNullOrNot(taskContent[1], false);
+      expectTextNullOrNot(taskContent[1], true);
       expectElementContainText(taskCounter, /Task counter: 2/i);
       expectListTagHaveLength(listTask, 2);
 
       btnDelete = screen.getAllByRole("button", { name: /delete/i });
       expect(btnDelete).toHaveLength(2);
       fireEvent.click(btnDelete[1]);
-      expectTextNullOrNot(taskContent[1], false);
+      expectTextNullOrNot(taskContent[1], true);
       expectElementContainText(taskCounter, /Task counter: 1/i);
       expectListTagHaveLength(listTask, 1);
 
       btnDelete = screen.getAllByRole("button", { name: /delete/i });
       expect(btnDelete).toHaveLength(1);
       fireEvent.click(btnDelete[0]);
-      expectTextNullOrNot(taskContent[0], false);
+      expectTextNullOrNot(taskContent[0], true);
       expectElementContainText(taskCounter, /Task counter: 0/i);
       expectListTagHaveLength(listTask, 0);
 
       btnDelete = screen.queryAllByRole("button", { name: /delete/i });
       expect(btnDelete).toHaveLength(0);
+    });
+  });
+});
+
+describe("----------Task Button Modify------------", () => {
+  it("renderAfterAddOneTask_inputNone_outputDisplayModifyField", () => {
+    const [inputTask, , btnAdd] = renderThenPickElement();
+    expect(screen.queryByRole("button", { name: /modify/i })).toBeNull();
+    expect(screen.queryByTestId("task-input-modify")).toBeNull();
+
+    const taskContent = "Test for modify";
+    addTask(inputTask, btnAdd, taskContent);
+
+    const btnModify = screen.getByRole("button", { name: /modify/i });
+    expect(btnModify).toBeInTheDocument();
+
+    fireEvent.click(btnModify);
+    const inputModify = screen.getByTestId("task-input-modify");
+    expect(inputModify).toBeInTheDocument();
+    expectInputTagHaveValue(inputModify, taskContent);
+
+    expect(screen.getByRole("button", { name: /save/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
+  });
+
+  describe("----------Modify------------", () => {
+    it.only("inputTrue_outputDisplayChange_exceptClickCancelOrOutside", () => {
+      const [inputTask, listTask, btnAdd] = renderThenPickElement();
+
+      const taskContent = "Test for modify";
+      addTask(inputTask, btnAdd, taskContent);
+      expectElementContainText(listTask, taskContent);
+
+      // Gia su da pass qua test ben tren => Ko test render nua
+      const btnModify = screen.getByRole("button", { name: /modify/i });
+      fireEvent.click(btnModify);
+      const inputModify = screen.getByTestId("task-input-modify");
+      let taskContentModified = "Modified #1";
+      fireEventChangeInputTag(inputModify, taskContentModified);
+      const btnSave = screen.getByRole("button", { name: /save/i });
+      fireEvent.click(btnSave);
+      expectElementContainText(listTask, taskContentModified);
+
+      // fireEvent.click(btnModify);
+      // taskContentModified = "Modified #2";
+      // fireEventChangeInputTag(inputModify, taskContentModified);
+      // fireEventClickOutside();
+      // expectElementContainText(listTask, taskContentModified, false);
+
+      // Bi loi chua detect dc button cancel
+      fireEvent.click(btnModify);
+      taskContentModified = "Modified #3";
+      fireEventChangeInputTag(inputModify, taskContentModified);
+      const btnCancel = screen.getByRole("button", { name: /cancel/i });
+      fireEvent.click(btnCancel);
+      expectElementContainText(listTask, taskContentModified, false);
+    });
+
+    it("inputNone_outputNotDisplayChange", () => {
+      const [inputTask, listTask, btnAdd] = renderThenPickElement();
+
+      const taskContent = "Test for modify";
+      addTask(inputTask, btnAdd, taskContent);
+
+      const btnModify = screen.getByRole("button", { name: /modify/i });
+
+      fireEvent.click(btnModify);
+      fireEventClickOutside();
+      expectElementContainText(listTask, taskContent);
+
+      fireEvent.click(btnModify);
+      const btnSave = screen.getByRole("button", { name: /save/i });
+      fireEvent.click(btnSave);
+      expectElementContainText(listTask, taskContent);
+
+      fireEvent.click(btnModify);
+      const btnCancel = screen.getByRole("button", { name: /cancel/i });
+      fireEvent.click(btnCancel);
+      expectElementContainText(listTask, taskContent);
     });
   });
 });

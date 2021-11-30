@@ -1,7 +1,7 @@
-import { screen, Matcher, within } from "@testing-library/react";
+import { screen, Matcher, within, fireEvent } from "@testing-library/react";
 
-export function expectTextNullOrNot(text: Matcher, isNot: Boolean = true) {
-  return !isNot
+export function expectTextNullOrNot(text: Matcher, isNull: Boolean = false) {
+  return isNull
     ? expect(screen.queryByText(text)).toBeNull()
     : expect(screen.queryByText(text)).not.toBeNull();
 }
@@ -9,9 +9,9 @@ export function expectTextNullOrNot(text: Matcher, isNot: Boolean = true) {
 export function expectInputTagHaveValue(
   inputTag: HTMLElement,
   value: string | number | string[] | null | undefined,
-  isVisible: boolean = true
+  isNotVisible: boolean = false
 ) {
-  return !isVisible
+  return isNotVisible
     ? expect(inputTag).not.toHaveValue(value)
     : expect(inputTag).toHaveValue(value);
 }
@@ -39,8 +39,35 @@ export function expectListTagHaveLength(
     : expect(items).toHaveLength(length);
 }
 
-export function mockFunction<T extends (...args: any[]) => any>(
-  fn: T | undefined
-): jest.MockedFunction<T> {
-  return fn as jest.MockedFunction<T>;
+// Chua lam duoc
+// export function expectListTagContainChild(
+//   listTag: HTMLElement,
+//   childText: string,
+//   isNotContain: boolean = false
+// ) {
+//   const { queryAllByRole } = within(listTag);
+//   const items = queryAllByRole("listitem");
+
+//   // return isNotContain
+//   //   ? expect(items).not.toContainElement(screen.getByText(childText))
+//   //   : expect(items).toContainElement(screen.getByText(childText));
+//   console.log(
+//     items.forEach((item) => {
+//       return expectElementContainText(item, childText);
+//     })
+//   );
+// }
+
+export function fireEventChangeInputTag(inputTag: HTMLElement, value: string) {
+  return fireEvent.change(inputTag, { target: { value: value } });
+}
+
+export function fireEventClickOutside() {
+  return fireEvent.click(document);
+}
+
+export function mockFunction<mockFnType extends (...args: any[]) => any>(
+  fn: mockFnType | undefined
+) {
+  return fn as jest.MockedFunction<mockFnType>;
 }

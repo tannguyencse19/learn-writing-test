@@ -15,7 +15,7 @@ describe.skip("------Add then Delete 5 tasks--------", () => {
   it("addThenDeleteImmediately_inputTaskTrue_outputDisplayNone", () => {
     const [inputTask, listTask, btnAdd, taskCounter] = renderThenPickElement();
 
-    function addThenDelete(idx?: number) {
+    function addThenDelete(idx: number) {
       const taskContent = `Task #${idx}`;
       addTask(inputTask, btnAdd, taskContent);
       const btnDelete = screen.getByRole("button", { name: /delete/i });
@@ -30,7 +30,7 @@ describe.skip("------Add then Delete 5 tasks--------", () => {
   it("finishAddThenDelete_inputTaskTrue_outputDisplayNone", () => {
     const [inputTask, listTask, btnAdd, taskCounter] = renderThenPickElement();
 
-    function add(idx?: number) {
+    function add(idx: number) {
       const taskContent = `Task #${idx}`;
       addTask(inputTask, btnAdd, taskContent);
     }

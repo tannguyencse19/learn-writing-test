@@ -2,7 +2,7 @@ import React from "react";
 import { clickHandlerType, propsTypeOfTodo } from "../../utils/Model";
 
 const Todo = (props: propsTypeOfTodo) => {
-  const { handleAddTask } = props;
+  // const { handleAddTask } = props;
 
   const [TaskInput, setTaskInput] = React.useState<string>("");
   const taskInputRef =
@@ -32,66 +32,138 @@ const Todo = (props: propsTypeOfTodo) => {
     setTaskCounter((prevState) => prevState - 1);
   }, []);
 
+  const handleModifyTaskLocal = React.useCallback(
+    (currentTask: string, newContent: string) => {
+      setTaskList((prevState) => {
+        prevState[prevState.indexOf(currentTask)] = newContent;
+        return [...prevState];
+      });
+    },
+    []
+  );
+
+  const ListProps = {
+    TaskList: TaskList,
+    handleDeleteTask: handleDeleteTaskLocal,
+    handleModifyTask: handleModifyTaskLocal,
+  };
+
   return (
     <>
       <input
         type="text"
-        name="task-input-text"
-        id="task-input-text"
+        name="task-input-add"
+        id="task-input-add"
         placeholder="e.g: Do laundry at 6pm"
         onChange={handleInputTask}
         ref={taskInputRef}
       />
+
       <button name="task-btn-add" onClick={handleAddTaskLocal}>
         Add
       </button>
 
-      <List TaskList={TaskList} handleDeleteTask={handleDeleteTaskLocal} />
+      <List {...ListProps} />
       <p>Task counter: {TaskCounter}</p>
     </>
   );
 };
 
-interface propsTypeOfList {
-  TaskList: Array<string>;
+interface propsTypeOfListHandler {
   handleDeleteTask: (taskName: string) => void;
+  handleModifyTask: (currentTask: string, newContent: string) => void;
+}
+
+interface propsTypeOfList extends propsTypeOfListHandler {
+  TaskList: Array<string>;
 }
 
 const List = React.memo((props: propsTypeOfList) => {
-  const { TaskList, handleDeleteTask } = props;
+  const { TaskList, handleDeleteTask, handleModifyTask } = props;
+  const ListItemProps = {
+    handleDeleteTask: handleDeleteTask,
+    handleModifyTask: handleModifyTask,
+  };
 
   return (
     <ul data-testid="task-list">
       To-do List
       {TaskList.map((taskName, idx) => (
-        <ListItem
-          key={`task-${idx}`}
-          taskName={taskName}
-          handleDeleteTask={handleDeleteTask}
-        />
+        <ListItem key={`task-${idx}`} taskName={taskName} {...ListItemProps} />
       ))}
     </ul>
   );
 });
 
-interface propsTypeOfListItem {
+interface propsTypeOfListItem extends propsTypeOfListHandler {
   taskName: string;
-  handleDeleteTask: (taskName: string) => void;
 }
 
 const ListItem = React.memo((props: propsTypeOfListItem) => {
-  const { taskName, handleDeleteTask } = props;
+  const { taskName, handleDeleteTask, handleModifyTask } = props;
+  const [IsModify, setIsModify] = React.useState(false);
+  const [ModifyContent, setModifyContent] = React.useState("");
 
   return (
     <li>
-      <span>{taskName}</span>
-      <button
-        name="task-btn-delete"
-        style={{ marginLeft: "10px" }}
-        onClick={() => handleDeleteTask(taskName)}
-      >
-        Delete
-      </button>
+      {IsModify ? (
+        <span>
+          <input
+            type="text"
+            name="task-input-modify"
+            id="task-input-modify"
+            data-testid="task-input-modify"
+            defaultValue={taskName}
+            onFocus={() => setModifyContent(taskName)}
+            autoFocus
+            onChange={({ target: { value } }) => setModifyContent(value)}
+            // ref={taskInputRef}
+          />
+
+          <button
+            name="task-btn-save"
+            style={{ marginLeft: "10px" }}
+            onClick={() => {
+              handleModifyTask(taskName, ModifyContent);
+              setModifyContent("");
+              setIsModify(false);
+            }}
+          >
+            Save
+          </button>
+
+          <button
+            name="task-btn-cancel"
+            style={{ marginLeft: "10px" }}
+            onClick={() => {}}
+          >
+            Cancel
+          </button>
+        </span>
+      ) : (
+        <>
+          <span>{taskName}</span>
+          <button
+            name="task-btn-delete"
+            style={{ marginLeft: "10px" }}
+            onClick={() => handleDeleteTask(taskName)}
+          >
+            Delete
+          </button>
+
+          <button
+            name="task-btn-modify"
+            style={{ marginLeft: "10px" }}
+            // onClick={() => handleModifyTask(taskName)}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsModify(true);
+            }}
+          >
+            Modify
+          </button>
+        </>
+      )}
     </li>
   );
 });
