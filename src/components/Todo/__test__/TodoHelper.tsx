@@ -1,6 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import Todo from "../Todo";
 import { propsTypeOfTodo } from "../../../utils/Model";
+import {
+  expectElementContainText,
+  fireEventChangeInputTag,
+} from "../../../utils/JestHelper";
 
 export function componentRender(props?: propsTypeOfTodo) {
   // Gom lai de sau nay khoi suy nghi, moi test phai viet <Todo />
@@ -27,4 +31,30 @@ export function addTask(
 ) {
   fireEvent.change(inputTask, { target: { value: taskContent } });
   fireEvent.click(btnAdd);
+}
+
+export function modifyTask(
+  listTask: HTMLElement,
+  taskContent: string,
+  isNotCancle: boolean = true
+) {
+  const btnModify = screen.getByRole("button", { name: /modify/i });
+  fireEvent.click(btnModify);
+
+  if (taskContent.length > 0) {
+    const inputModify = screen.getByTestId("task-input-modify");
+    fireEventChangeInputTag(inputModify, taskContent);
+  }
+
+  if (isNotCancle) {
+    const btnSave = screen.getByRole("button", { name: /save/i });
+    fireEvent.click(btnSave);
+  } else {
+    const btnCancel = screen.getByRole("button", { name: /cancel/i });
+    fireEvent.click(btnCancel);
+  }
+}
+
+export function testValidator(el: HTMLElement) {
+  expect(el).toBe(null);
 }

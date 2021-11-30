@@ -49,7 +49,8 @@ const Todo = (props: propsTypeOfTodo) => {
   };
 
   return (
-    <>
+    // https://stackoverflow.com/questions/67930922/testing-library-react-clicking-outside-of-component-not-working
+    <div data-testid="todo-wrapper">
       <input
         type="text"
         name="task-input-add"
@@ -65,7 +66,7 @@ const Todo = (props: propsTypeOfTodo) => {
 
       <List {...ListProps} />
       <p>Task counter: {TaskCounter}</p>
-    </>
+    </div>
   );
 };
 
@@ -103,11 +104,29 @@ const ListItem = React.memo((props: propsTypeOfListItem) => {
   const { taskName, handleDeleteTask, handleModifyTask } = props;
   const [IsModify, setIsModify] = React.useState(false);
   const [ModifyContent, setModifyContent] = React.useState("");
+  const wrapperRef = React.useRef<any>();
+
+  React.useEffect(() => {
+    function handleClickOutside(event: { target: any }) {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        // console.log("You clicked outside of me!");
+        setIsModify(false);
+      }
+    }
+
+    // Bind the event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Unbind the event listener on clean up
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [wrapperRef]);
 
   return (
-    <li>
+    <li ref={wrapperRef}>
       {IsModify ? (
-        <span>
+        <>
           <input
             type="text"
             name="task-input-modify"
@@ -135,11 +154,14 @@ const ListItem = React.memo((props: propsTypeOfListItem) => {
           <button
             name="task-btn-cancel"
             style={{ marginLeft: "10px" }}
-            onClick={() => {}}
+            onClick={() => {
+              setModifyContent("");
+              setIsModify(false);
+            }}
           >
             Cancel
           </button>
-        </span>
+        </>
       ) : (
         <>
           <span>{taskName}</span>

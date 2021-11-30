@@ -62,10 +62,6 @@ export function fireEventChangeInputTag(inputTag: HTMLElement, value: string) {
   return fireEvent.change(inputTag, { target: { value: value } });
 }
 
-export function fireEventClickOutside() {
-  return fireEvent.click(document);
-}
-
 export function mockFunction<mockFnType extends (...args: any[]) => any>(
   fn: mockFnType | undefined
 ) {

@@ -3,15 +3,18 @@ import { screen, fireEvent } from "@testing-library/react";
 import {
   expectElementContainText,
   expectInputTagHaveValue,
-  expectListTagContainChild,
   expectListTagHaveLength,
   expectTextNullOrNot,
   fireEventChangeInputTag,
-  fireEventClickOutside,
 } from "../../../utils/JestHelper";
-import { addTask, renderThenPickElement } from "./TodoHelper";
-import TestRenderer from "react-test-renderer";
-import Todo from "../Todo";
+import {
+  addTask,
+  clickOutside,
+  modifyTask,
+  renderThenPickElement,
+  testValidator,
+} from "./TodoHelper";
+//
 
 describe("----------Task Input Add---------", () => {
   it("render_inputTaskEmpty_outputDisplayEmpty", () => {
@@ -56,7 +59,7 @@ describe("----------Task Button Add------------", () => {
     expectInputTagHaveValue(inputTask, "");
   });
 
-  describe("pressing_inputTaskEmptyOrTrue_outputDisplayTask", () => {
+  describe("------------Add 1 Task-------------", () => {
     it("step1_inputTrue_outputDisplayTaskJustAdded", () => {
       const [inputTask, , btnAdd, taskCounter] = renderThenPickElement();
 
@@ -70,7 +73,7 @@ describe("----------Task Button Add------------", () => {
       expectInputTagHaveValue(inputTask, "");
     });
 
-    it("step2_inputEmpty_outputDisplayEmptyTask", () => {
+    it("step2_inputEmpty_outputNotDisplayThatTask", () => {
       const [inputTask, , btnAdd, taskCounter] = renderThenPickElement();
 
       const taskContent = "First task";
@@ -97,7 +100,7 @@ describe("----------Task View-----------", () => {
     expectElementContainText(taskCounter, /Task counter: 0/i);
   });
 
-  describe("addOneTask_inputTaskEmptyOrTrue", () => {
+  describe("----------Add 1 Task-----------", () => {
     it("case1_inputEmpty_outputDisplayEmpty", () => {
       const [, listTask, btnAdd, taskCounter] = renderThenPickElement();
 
@@ -146,8 +149,8 @@ describe("---------Task Button Delete--------", () => {
     expect(btnDelete).toBeInTheDocument();
   });
 
-  describe("pressing_outputExpectTaskDisappear", () => {
-    it("case1_addOneTask", () => {
+  describe("------------Delete task------------", () => {
+    it("case1_deleteOneTask", () => {
       const [inputTask, listTask, btnAdd, taskCounter] =
         renderThenPickElement();
 
@@ -161,7 +164,7 @@ describe("---------Task Button Delete--------", () => {
       expectListTagHaveLength(listTask, 0);
     });
 
-    it("case2_addManyTask_NoDuplicateTask", () => {
+    it("case2_deleteManyTask_NoDuplicateTask", () => {
       const [inputTask, listTask, btnAdd, taskCounter] =
         renderThenPickElement();
 
@@ -197,7 +200,7 @@ describe("---------Task Button Delete--------", () => {
 });
 
 describe("----------Task Button Modify------------", () => {
-  it("renderAfterAddOneTask_inputNone_outputDisplayModifyField", () => {
+  it("renderAfterAddOneTask_inputNone_outputDisplay", () => {
     const [inputTask, , btnAdd] = renderThenPickElement();
     expect(screen.queryByRole("button", { name: /modify/i })).toBeNull();
     expect(screen.queryByTestId("task-input-modify")).toBeNull();
@@ -217,36 +220,29 @@ describe("----------Task Button Modify------------", () => {
     expect(screen.getByRole("button", { name: /cancel/i })).toBeInTheDocument();
   });
 
-  describe("----------Modify------------", () => {
-    it.only("inputTrue_outputDisplayChange_exceptClickCancelOrOutside", () => {
+  describe.only("----------Modify------------", () => {
+    it("inputTrue_outputDisplayChange_exceptClickCancelOrOutside", () => {
       const [inputTask, listTask, btnAdd] = renderThenPickElement();
 
       const taskContent = "Test for modify";
       addTask(inputTask, btnAdd, taskContent);
-      expectElementContainText(listTask, taskContent);
 
       // Gia su da pass qua test ben tren => Ko test render nua
-      const btnModify = screen.getByRole("button", { name: /modify/i });
-      fireEvent.click(btnModify);
-      const inputModify = screen.getByTestId("task-input-modify");
       let taskContentModified = "Modified #1";
-      fireEventChangeInputTag(inputModify, taskContentModified);
-      const btnSave = screen.getByRole("button", { name: /save/i });
-      fireEvent.click(btnSave);
+      modifyTask(listTask, taskContentModified);
       expectElementContainText(listTask, taskContentModified);
 
-      // fireEvent.click(btnModify);
       // taskContentModified = "Modified #2";
-      // fireEventChangeInputTag(inputModify, taskContentModified);
-      // fireEventClickOutside();
+      // const btnModify = screen.getByRole("button", { name: /modify/i });
+      // fireEvent.click(btnModify);
+      // const inputModify = screen.getByTestId("task-input-modify");
+      // fireEventChangeInputTag(inputModify, taskContent);
+      // // clickOutside();
+      // testValidator(listTask);
       // expectElementContainText(listTask, taskContentModified, false);
 
-      // Bi loi chua detect dc button cancel
-      fireEvent.click(btnModify);
       taskContentModified = "Modified #3";
-      fireEventChangeInputTag(inputModify, taskContentModified);
-      const btnCancel = screen.getByRole("button", { name: /cancel/i });
-      fireEvent.click(btnCancel);
+      modifyTask(listTask, taskContentModified, false);
       expectElementContainText(listTask, taskContentModified, false);
     });
 
@@ -256,20 +252,14 @@ describe("----------Task Button Modify------------", () => {
       const taskContent = "Test for modify";
       addTask(inputTask, btnAdd, taskContent);
 
-      const btnModify = screen.getByRole("button", { name: /modify/i });
-
-      fireEvent.click(btnModify);
-      fireEventClickOutside();
+      modifyTask(listTask, "");
       expectElementContainText(listTask, taskContent);
 
-      fireEvent.click(btnModify);
-      const btnSave = screen.getByRole("button", { name: /save/i });
-      fireEvent.click(btnSave);
+      modifyTask(listTask, "");
+      // clickOutside();
       expectElementContainText(listTask, taskContent);
 
-      fireEvent.click(btnModify);
-      const btnCancel = screen.getByRole("button", { name: /cancel/i });
-      fireEvent.click(btnCancel);
+      modifyTask(listTask, "", false);
       expectElementContainText(listTask, taskContent);
     });
   });
