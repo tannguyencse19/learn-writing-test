@@ -9,7 +9,6 @@ import {
 } from "../../../utils/JestHelper";
 import {
   addTask,
-  clickOutside,
   modifyTask,
   renderThenPickElement,
   testValidator,
@@ -255,9 +254,9 @@ describe("----------Task Button Modify------------", () => {
       modifyTask(listTask, "");
       expectElementContainText(listTask, taskContent);
 
-      modifyTask(listTask, "");
-      // clickOutside();
-      expectElementContainText(listTask, taskContent);
+      // modifyTask(listTask, "");
+      // // clickOutside();
+      // expectElementContainText(listTask, taskContent);
 
       modifyTask(listTask, "", false);
       expectElementContainText(listTask, taskContent);
