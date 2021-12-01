@@ -19,8 +19,10 @@
 		"scope": "",
 		"prefix": "it",
 		"body": [
-			"it('${1:action}_${2:inputWhat}_${3:outputWhat}', () => {",
-			"\t$4",
+			"it(`${1:action}",
+			"\tInput: ${2:what}",
+			"\tOutput: ${3:what}`, () => {",
+			"\t\t$4",
 			"});",
 		],
 		"description": "Jest it snippet"

@@ -18,7 +18,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --maxWorkers=1",
+    "test": "react-scripts test --maxWorkers=1 --watchAll=false",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
