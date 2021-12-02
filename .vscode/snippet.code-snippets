@@ -22,7 +22,7 @@
 			"it(`${1:action}",
 			"\tInput: ${2:what}",
 			"\tOutput: ${3:what}`, () => {",
-			"\t\t$4",
+			"\trender($4)",
 			"});",
 		],
 		"description": "Jest it snippet"

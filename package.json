@@ -18,7 +18,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --maxWorkers=1 --watchAll=false",
+    "test": "react-scripts test --maxWorkers=2 --watchAll=false",
+    "test report": "react-scripts test --maxWorkers=2 --watchAll=false --collectCoverage",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

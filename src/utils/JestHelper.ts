@@ -18,12 +18,12 @@ export function expectInputTagHaveValue(
 
 export function expectElementContainText(
   el: HTMLElement,
-  text: string | RegExp,
+  matcher: string | RegExp,
   isVisible: boolean = true
 ) {
   return !isVisible
-    ? expect(el).not.toHaveTextContent(text as RegExp)
-    : expect(el).toHaveTextContent(text as RegExp);
+    ? expect(el).not.toHaveTextContent(matcher)
+    : expect(el).toHaveTextContent(matcher);
 }
 
 export function expectListTagHaveLength(
