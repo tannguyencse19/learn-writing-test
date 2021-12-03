@@ -4,8 +4,8 @@ export function sleepAwait(ms: number) {
 
 // chua lam duoc require key: number
 export function loop(
+  callback: (key: number, ...params: any[]) => any,
   times: number,
-  fnToDo: (key: number, ...params: any[]) => any
 ) {
-  [...Array(times)].map((_, idx) => fnToDo(idx));
+  [...Array(times)].map((_, idx) => callback(idx));
 }

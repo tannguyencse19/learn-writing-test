@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import Todo from "../Todo";
 
 export function renderThenPickElement() {
@@ -24,19 +24,22 @@ export function modifyTask(
   modifyContent: string,
   isNotCancel: boolean = true
 ) {
-  const btnModify = screen.getByRole("button", { name: /modify/i });
+  const { getByRole, getByDisplayValue } = within(
+    screen.getByTestId(currentTask)
+  );
+
+  const btnModify = getByRole("button", { name: /modify/i });
   fireEvent.click(btnModify);
-  const inputModifyField = screen.getByDisplayValue(currentTask);
+  const inputModifyField = getByDisplayValue(currentTask);
   fireEvent.change(inputModifyField, { target: { value: modifyContent } });
 
   if (isNotCancel) {
-    const btnSave = screen.getByRole("button", { name: /save/i });
+    const btnSave = getByRole("button", { name: /save/i });
     fireEvent.click(btnSave);
   } else {
-    const btnCancel = screen.getByRole("button", { name: /cancel/i });
+    const btnCancel = getByRole("button", { name: /cancel/i });
     fireEvent.click(btnCancel);
   }
 
   return [inputModifyField]; // for further testing
 }
-

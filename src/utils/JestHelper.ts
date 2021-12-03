@@ -29,12 +29,12 @@ export function expectElementContainText(
 export function expectListTagHaveLength(
   listTag: HTMLElement,
   length: number,
-  isNotEqual: boolean = false
+  isNotEqual: boolean = true
 ) {
   const { queryAllByRole } = within(listTag);
   const items = queryAllByRole("listitem");
 
-  return isNotEqual
+  return !isNotEqual
     ? expect(items).not.toHaveLength(length)
     : expect(items).toHaveLength(length);
 }
