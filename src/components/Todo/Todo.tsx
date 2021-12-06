@@ -1,4 +1,5 @@
 import React, { MutableRefObject } from "react";
+import ListItem from "./ListItem";
 
 const Todo = () => {
   const [TaskList, setTaskList] = React.useState<string[]>([]);
@@ -66,7 +67,7 @@ const Todo = () => {
           TaskList.map((task, idx) => (
             <ListItem
               key={`task-${idx}`}
-              task={task}
+              item={task}
               handleBtnSave={handleBtnSave}
               handleBtnDelete={handleBtnDelete}
             />
@@ -76,63 +77,9 @@ const Todo = () => {
   );
 };
 
-interface HandlerProps {
+export interface HandlerProps {
   handleBtnSave: (currentTask: string, modifyContent: string) => void;
   handleBtnDelete: (taskName: string) => void;
 }
-interface ListItemProps extends HandlerProps {
-  task: string;
-}
-
-const ListItem = React.memo(
-  ({ task, handleBtnSave, handleBtnDelete }: ListItemProps) => {
-    const [InputModify, setInputModify] = React.useState("");
-    const [IsModify, setIsModify] = React.useState(false);
-
-    return (
-      <li data-testid={task}>
-        {IsModify ? (
-          <>
-            <input
-              type="text"
-              defaultValue={task}
-              onChange={({ target: { value } }) => setInputModify(value)}
-            />
-            <button
-              onClick={() => {
-                handleBtnSave(task, InputModify);
-                setInputModify("");
-                setIsModify(false);
-              }}
-            >
-              Save
-            </button>
-            <button
-              onClick={() => {
-                setInputModify("");
-                setIsModify(false);
-              }}
-            >
-              Cancel
-            </button>
-          </>
-        ) : (
-          <>
-            <span>{task}</span>
-            <button onClick={() => handleBtnDelete(task)}>Delete</button>
-            <button
-              onClick={() => {
-                setInputModify(task);
-                setIsModify(true);
-              }}
-            >
-              Modify
-            </button>
-          </>
-        )}
-      </li>
-    );
-  }
-);
 
 export default Todo;

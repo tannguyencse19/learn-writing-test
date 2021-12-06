@@ -8,6 +8,7 @@ import Todo from "../Todo";
 import { addTask, modifyTask, renderThenPickElement } from "./TestHelper";
 
 /* TODO: Todo.test.tsx
+  - Mock axios
   - Click outside instead of cancel
 */
 
@@ -185,21 +186,5 @@ describe("----------Function: Modify, Save, Cancel------------", () => {
   });
 });
 
-describe("----------Integration Test------------", () => {
-  it(`Add 100 (nonduplicate) tasks, then delete
-  Input: True
-  Output: Display none task`, () => {
-    const times = 100;
-    const [inputField, btnAdd, taskView] = renderThenPickElement();
 
-    [...Array(times)].map((_, idx) =>
-      addTask(inputField, btnAdd, `Task #${idx}`)
-    );
 
-    const btnDelete = screen.getAllByRole(`button`, { name: /delete/i });
-    [...Array(times)].map(() => fireEvent.click(btnDelete[0]));
-
-    expectListTagHaveLength(taskView, 0);
-    expectElementContainText(taskView, /task/i, false);
-  });
-});
