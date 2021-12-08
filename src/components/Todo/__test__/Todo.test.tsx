@@ -6,6 +6,8 @@ import {
 } from "../../../utils/JestHelper";
 import Todo from "../Todo";
 import { addTask, modifyTask, renderThenPickElement } from "./TestHelper";
+import axios from "axios";
+import { fetchData } from "../FetchData";
 
 /* TODO: Todo.test.tsx
   - Mock axios
@@ -39,6 +41,43 @@ import { addTask, modifyTask, renderThenPickElement } from "./TestHelper";
   - Integration Test
     - Add 100 task, then delete
 */
+
+// jest.mock('axios');
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+// https://www.robinwieruch.de/axios-jest/
+describe.only("fetchData", () => {
+  it("fetches successfully data from an API", async () => {
+    const data = {
+      data: {
+        hits: [
+          {
+            objectID: "1",
+            title: "a",
+          },
+          {
+            objectID: "2",
+            title: "b",
+          },
+        ],
+      },
+    };
+
+    mockedAxios.get.mockImplementationOnce(() => Promise.resolve(data));
+
+    await expect(fetchData("react")).resolves.toEqual(data);
+  });
+
+  it("fetches erroneously data from an API", async () => {
+    const errorMessage = "Network Error";
+
+    mockedAxios.get.mockImplementationOnce(() =>
+      Promise.reject(new Error(errorMessage))
+    );
+
+    await expect(fetchData("react")).rejects.toThrow(errorMessage);
+  });
+});
 
 describe("----------Render------------", () => {
   it(`Render all element
@@ -76,6 +115,12 @@ describe("----------Render------------", () => {
     expect(screen.getAllByRole("button", { name: /cancel/i })).not.toHaveLength(
       2
     );
+  });
+
+  it.skip(`Mock axios`, async () => {
+    // const asyncMock = jest.fn().mockResolvedValue(43);
+    // const result2 = await asyncMock();
+    // expect(result2).toBe();
   });
 });
 
@@ -185,6 +230,3 @@ describe("----------Function: Modify, Save, Cancel------------", () => {
     expect(screen.getByText(/error: modify duplicate/i)).toBeInTheDocument();
   });
 });
-
-
-
