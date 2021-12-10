@@ -42,7 +42,8 @@ import { fetchData } from "../FetchData";
     - Add 100 task, then delete
 */
 
-// jest.mock('axios');
+jest.mock("axios"); // https://stackoverflow.com/questions/64844580/jest-mocking-typeerror-axios-get-mockresolvedvalue-is-not-a-function
+// https://stackoverflow.com/questions/51275434/type-of-axios-mock-using-jest-typescript
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 // https://www.robinwieruch.de/axios-jest/
@@ -63,7 +64,7 @@ describe.only("fetchData", () => {
       },
     };
 
-    mockedAxios.get.mockImplementationOnce(() => Promise.resolve(data));
+    mockedAxios.get.mockResolvedValueOnce(data);
 
     await expect(fetchData("react")).resolves.toEqual(data);
   });
@@ -71,9 +72,7 @@ describe.only("fetchData", () => {
   it("fetches erroneously data from an API", async () => {
     const errorMessage = "Network Error";
 
-    mockedAxios.get.mockImplementationOnce(() =>
-      Promise.reject(new Error(errorMessage))
-    );
+    mockedAxios.get.mockRejectedValueOnce(new Error(errorMessage));
 
     await expect(fetchData("react")).rejects.toThrow(errorMessage);
   });
