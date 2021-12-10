@@ -1,8 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { loop } from "../../../utils/Helper";
 import {
+  expectAsyncAwaitReject,
+  expectAsyncAwaitResolve,
   expectElementContainText,
   expectListTagHaveLength,
+  mockRejectedValueArgument,
 } from "../../../utils/JestHelper";
 import Todo from "../Todo";
 import { addTask, modifyTask, renderThenPickElement } from "./TestHelper";
@@ -66,15 +69,17 @@ describe.only("fetchData", () => {
 
     mockedAxios.get.mockResolvedValueOnce(data);
 
-    await expect(fetchData("react")).resolves.toEqual(data);
+    await expectAsyncAwaitResolve(fetchData("react"), data);
   });
 
   it("fetches erroneously data from an API", async () => {
     const errorMessage = "Network Error";
 
-    mockedAxios.get.mockRejectedValueOnce(new Error(errorMessage));
+    mockedAxios.get.mockRejectedValueOnce(
+      mockRejectedValueArgument(errorMessage)
+    );
 
-    await expect(fetchData("react")).rejects.toThrow(errorMessage);
+    await expectAsyncAwaitReject(fetchData("react"), errorMessage);
   });
 });
 

@@ -39,6 +39,21 @@ export function expectListTagHaveLength(
     : expect(items).toHaveLength(length);
 }
 
+export async function expectAsyncAwaitResolve(
+  awaitCode: any,
+  resolveData: any
+) {
+  return await expect(awaitCode).resolves.toEqual(resolveData);
+}
+
+export function mockRejectedValueArgument(err: any) {
+  return new Error(err);
+}
+
+export async function expectAsyncAwaitReject(awaitCode: any, rejectErr: any) {
+  return await expect(awaitCode).rejects.toThrow(rejectErr);
+}
+
 // Chua lam duoc
 // export function expectListTagContainChild(
 //   listTag: HTMLElement,
