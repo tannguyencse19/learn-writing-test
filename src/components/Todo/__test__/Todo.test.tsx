@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { loop } from "../../../utils/Helper";
+import { logFnDefinition } from "../../../utils/Helper";
 import {
   expectAsyncAwaitReject,
   expectAsyncAwaitResolve,
@@ -7,13 +7,12 @@ import {
   expectListTagHaveLength,
   mockRejectedValueArgument,
 } from "../../../utils/JestHelper";
-import Todo from "../Todo";
+import * as Todo from "../Todo";
 import { addTask, modifyTask, renderThenPickElement } from "./TestHelper";
 import axios from "axios";
 import { fetchData } from "../FetchData";
 
 /* TODO: Todo.test.tsx
-  - Mock axios
   - Click outside instead of cancel
 */
 
@@ -43,14 +42,15 @@ import { fetchData } from "../FetchData";
 
   - Integration Test
     - Add 100 task, then delete
+
+  - Mock axios
 */
 
 jest.mock("axios"); // https://stackoverflow.com/questions/64844580/jest-mocking-typeerror-axios-get-mockresolvedvalue-is-not-a-function
-// https://stackoverflow.com/questions/51275434/type-of-axios-mock-using-jest-typescript
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const mockedAxios = axios as jest.Mocked<typeof axios>; // https://stackoverflow.com/questions/51275434/type-of-axios-mock-using-jest-typescript
 
 // https://www.robinwieruch.de/axios-jest/
-describe.only("fetchData", () => {
+describe.skip("fetchData", () => {
   it("fetches successfully data from an API", async () => {
     const data = {
       data: {
@@ -80,6 +80,27 @@ describe.only("fetchData", () => {
     );
 
     await expectAsyncAwaitReject(fetchData("react"), errorMessage);
+  });
+});
+
+// eslint-disable-next-line import/first
+import * as math from "../math";
+// jest.mock("../math");
+// const mockedMath = math as jest.Mocked<typeof math>;
+
+describe.only("----------Mock Math.js------------", () => {
+  it(`action
+    Input: what
+    Output: what`, () => {
+    // mockedMath.add.mockImplementation(() => 6969);
+
+    // expect(Todo.doAdd(1, 2)).toBe(6969);
+    // expect(Todo.doAdd(5, 6)).toBe(6969);
+
+    const addMock = jest.spyOn(math, "add");
+
+    // calls the original implementation
+    expect(Todo.doAdd(1, 2)).toEqual(3);
   });
 });
 

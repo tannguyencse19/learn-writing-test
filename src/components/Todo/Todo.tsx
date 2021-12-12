@@ -82,4 +82,12 @@ export interface HandlerProps {
   handleBtnDelete: (taskName: string) => void;
 }
 
+// eslint-disable-next-line import/first
+import * as math from './math';
+
+export const doAdd      = (a: any, b: any) => math.add(a, b);
+export const doSubtract = (a: any, b: any) => math.subtract(a, b);
+export const doMultiply = (a: any, b: any) => math.multiply(a, b);
+export const doDivide   = (a: any, b: any) => math.divide(a, b);
+
 export default Todo;

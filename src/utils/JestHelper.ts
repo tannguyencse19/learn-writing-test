@@ -40,17 +40,20 @@ export function expectListTagHaveLength(
 }
 
 export async function expectAsyncAwaitResolve(
-  awaitCode: any,
+  awaitCode: Promise<any>, // Vi return cua asyncAwait code la Promise
   resolveData: any
 ) {
   return await expect(awaitCode).resolves.toEqual(resolveData);
 }
 
-export function mockRejectedValueArgument(err: any) {
+export function mockRejectedValueArgument(err: string) {
   return new Error(err);
 }
 
-export async function expectAsyncAwaitReject(awaitCode: any, rejectErr: any) {
+export async function expectAsyncAwaitReject(
+  awaitCode: Promise<any>,
+  rejectErr: string | RegExp | Error
+) {
   return await expect(awaitCode).rejects.toThrow(rejectErr);
 }
 
