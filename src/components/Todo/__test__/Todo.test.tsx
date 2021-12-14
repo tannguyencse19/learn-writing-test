@@ -47,14 +47,15 @@ import { fetchData } from "../FetchData";
 */
 
 // Kieu 1: Total mock
-jest.mock("axios"); // https://stackoverflow.com/questions/64844580/jest-mocking-typeerror-axios-get-mockresolvedvalue-is-not-a-function
-const mockedAxios = axios as jest.Mocked<typeof axios>; // https://stackoverflow.com/questions/51275434/type-of-axios-mock-using-jest-typescript
-
-// Kieu 2: Partial mock (spyOn)
+// jest.mock("axios"); // https://stackoverflow.com/questions/64844580/jest-mocking-typeerror-axios-get-mockresolvedvalue-is-not-a-function
+// const mockedAxios = axios as jest.Mocked<typeof axios>; // https://stackoverflow.com/questions/51275434/type-of-axios-mock-using-jest-typescript
 
 // https://www.robinwieruch.de/axios-jest/
-describe.skip("fetchData", () => {
-  it("fetches successfully data from an API", async () => {
+describe.only("fetchData", () => {
+  // Kieu 2: Partial mock (spyOn)
+  const mockAxiosGet = jest.spyOn(axios, "get");
+
+  it.only("fetches successfully data from an API", async () => {
     const data = {
       data: {
         hits: [
@@ -70,17 +71,14 @@ describe.skip("fetchData", () => {
       },
     };
 
-    mockedAxios.get.mockResolvedValueOnce(data);
-
+    mockAxiosGet.mockResolvedValueOnce(data);
     await expectAsyncAwaitResolve(fetchData("react"), data);
   });
 
   it("fetches erroneously data from an API", async () => {
     const errorMessage = "Network Error";
 
-    mockedAxios.get.mockRejectedValueOnce(
-      mockRejectedValueArgument(errorMessage)
-    );
+    mockAxiosGet.mockRejectedValueOnce(mockRejectedValueArgument(errorMessage));
 
     await expectAsyncAwaitReject(fetchData("react"), errorMessage);
   });
