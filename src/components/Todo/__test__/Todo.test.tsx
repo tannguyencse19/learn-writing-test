@@ -46,8 +46,11 @@ import { fetchData } from "../FetchData";
   - Mock axios
 */
 
+// Kieu 1: Total mock
 jest.mock("axios"); // https://stackoverflow.com/questions/64844580/jest-mocking-typeerror-axios-get-mockresolvedvalue-is-not-a-function
 const mockedAxios = axios as jest.Mocked<typeof axios>; // https://stackoverflow.com/questions/51275434/type-of-axios-mock-using-jest-typescript
+
+// Kieu 2: Partial mock (spyOn)
 
 // https://www.robinwieruch.de/axios-jest/
 describe.skip("fetchData", () => {
@@ -83,26 +86,27 @@ describe.skip("fetchData", () => {
   });
 });
 
-// eslint-disable-next-line import/first
-import * as math from "../math";
-// jest.mock("../math");
-// const mockedMath = math as jest.Mocked<typeof math>;
+// Chi mock API va animation library
+// Phan duoi nay xem cho biet
+// import * as math from "../math";
+// // jest.mock("../math");
+// // const mockedMath = math as jest.Mocked<typeof math>;
 
-describe.only("----------Mock Math.js------------", () => {
-  it(`action
-    Input: what
-    Output: what`, () => {
-    // mockedMath.add.mockImplementation(() => 6969);
+// describe.only("----------Mock Math.js------------", () => {
+//   it(`action
+//     Input: what
+//     Output: what`, () => {
+//     // mockedMath.add.mockImplementation(() => 6969);
 
-    // expect(Todo.doAdd(1, 2)).toBe(6969);
-    // expect(Todo.doAdd(5, 6)).toBe(6969);
+//     // expect(Todo.doAdd(1, 2)).toBe(6969);
+//     // expect(Todo.doAdd(5, 6)).toBe(6969);
 
-    const addMock = jest.spyOn(math, "add");
+//     const addMock = jest.spyOn(math, "add");
 
-    // calls the original implementation
-    expect(Todo.doAdd(1, 2)).toEqual(3);
-  });
-});
+//     // calls the original implementation
+//     expect(Todo.doAdd(1, 2)).toEqual(3);
+//   });
+// });
 
 describe("----------Render------------", () => {
   it(`Render all element
